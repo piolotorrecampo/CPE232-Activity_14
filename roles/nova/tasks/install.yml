@@ -1,0 +1,11 @@
+- name: Install nova and its dependencies
+  yum:
+     name: 
+      - openstack-nova-api 
+      - openstack-nova-conductor
+      - openstack-nova-novncproxy 
+      - openstack-nova-scheduler
+
+
+
+ 

@@ -1,0 +1,30 @@
+- name: Copying the config file
+  copy: 
+    src: nova.conf
+    dest: /etc/nova/nova.conf
+    owner: root
+    group: nova
+    mode: 0640
+
+- name: Populating the database
+  command: 
+    su -s /bin/sh -c "nova-manage api_db sync" nova
+    su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova
+    su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova
+    su -s /bin/sh -c "nova-manage db sync" nova
+  failed_when: false
+  no_log: true
+
+- name: Restarting nova services
+  service: 
+    name: 
+      - openstack-nova-api.service 
+      - openstack-nova-scheduler.service 
+      - openstack-nova-conductor.service 
+      - openstack-nova-novncproxy.service
+    state: started
+    enabled: true  
+  failed_when: false
+  no_log: true
+
+

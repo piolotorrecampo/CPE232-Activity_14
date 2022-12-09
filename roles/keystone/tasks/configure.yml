@@ -1,0 +1,72 @@
+- name: Configuring the connection variable 
+  replace: 
+    path: /etc/keystone/keystone.conf 
+    regexp: '#connection = <None>' 
+    replace: 'connection = mysql+pymysql://keystone:keystonepass@controller/keystone' 
+
+- name: Configuring memcached variable
+  replace: 
+    path: /etc/keystone/keystone.conf 
+    regexp: '#memcache_servers = localhost:11211' 
+    replace: 'memcache_servers = controller:11211' 
+
+- name: Configuring the fernet variable
+  replace:
+    path: /etc/keystone/keystone.conf 
+    regexp: '#provider = fernet'
+    replace: 'provider = fernet' 
+
+- name: Populating the database
+  command: su -s /bin/sh -c "keystone-manage db_sync" keystone
+
+- name: Initialize fernet repositories
+  shell: |
+    keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
+    keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+
+- name: Setting up bootstrap identity service
+  shell: |
+    keystone-manage bootstrap --bootstrap-password adminpass --bootstrap-admin-url http://controller:5000/v3/ --bootstrap-internal-url http://controller:5000/v3/ --bootstrap-public-url http://controller:5000/v3/ --bootstrap-region-id RegionOne
+
+- name: Configuring setbools
+  shell: |
+    setsebool -P httpd_use_openstack on
+    setsebool -P httpd_can_network_connect on
+    setsebool -P httpd_can_network_connect_db on
+
+- name: Opening firewall
+  ansible.posix.firewalld:
+    port: 5000/tcp
+    permanent: yes
+    state: enabled
+
+  notify: Reloading firewall
+
+- name: Configuring apache
+  replace: 
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '#ServerName www.example.com:80'
+    replace: 'ServerName controller'
+
+  notify: Creating link
+
+- name: Starting and enabling service
+  service:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: Copying admin-openrc
+  copy:
+    src: admin-openrc
+    dest: /home/cserver/
+    owner: root
+    group: root
+
+- name: Changing permission
+  shell: |
+    sudo chmod 755 /home/cserver/admin-openrc
+    source /home/cserver/admin-openrc
+
+
+

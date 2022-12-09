@@ -1,0 +1,14 @@
+- name: Creating keystone database
+  mysql_query:
+    login_user: root
+    login_password: mysqlpass
+    login_unix_socket: /var/lib/mysql/mysql.sock   
+    query: 
+      - CREATE DATABASE keystone;
+      - GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'keystonepass';
+      - GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'keystonepass';
+    single_transaction: yes
+  failed_when: false
+  no_log: true
+
+

@@ -1,0 +1,9 @@
+- name: Creating link
+  command: ln -s /usr/share/keystone/wsgi-keystone.conf /etc/httpd/conf.d/
+  failed_when: false
+  no_log: true
+
+
+- name: Reloading firewall
+  command: firewall-cmd --reload
+

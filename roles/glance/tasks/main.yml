@@ -1,0 +1,10 @@
+- import_tasks: install.yml
+- import_tasks: configure.yml
+
+- block:
+  - name: Verifying openstack-glance-api installation
+    command: systemctl status openstack-glance-api
+    register: glance_service
+
+  - debug:
+      msg="{{ glance_service }}"

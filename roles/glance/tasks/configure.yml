@@ -1,0 +1,20 @@
+- name: Copying the config file
+  copy: 
+    src: glance-api.conf
+    dest: /etc/glance/glance-api.conf
+    owner: root
+    group: glance
+    mode: 0640
+
+- name: Populating the database
+  command: su -s /bin/sh -c "glance-manage db_sync" glance
+  failed_when: false
+  no_log: true
+
+- name: Restarting glance-api
+  service: 
+    name: openstack-glance-api.service
+    state: started
+    enabled: true
+
+

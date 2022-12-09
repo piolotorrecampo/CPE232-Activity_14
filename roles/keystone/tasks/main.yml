@@ -1,0 +1,11 @@
+- import_tasks: prereq.yml
+- import_tasks: install.yml
+- import_tasks: configure.yml
+
+- block:
+  - name: Verifying if apache status
+    command: systemctl status httpd
+    register: httpd_service
+
+  - debug: 
+      msg="{{ httpd_service }}"

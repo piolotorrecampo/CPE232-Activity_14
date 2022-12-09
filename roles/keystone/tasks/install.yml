@@ -1,0 +1,9 @@
+- name: Installing keystone and its dependencies
+  yum:
+    name:
+      - openstack-keystone 
+      - httpd 
+      - mod_wsgi 
+      - openstack-utils
+  
+

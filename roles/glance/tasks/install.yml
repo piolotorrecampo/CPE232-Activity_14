@@ -1,0 +1,11 @@
+- name: Intalling glance
+  yum:
+    name: openstack-glance
+
+
+
+
+
+
+
+

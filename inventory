@@ -1,0 +1,2 @@
+[controller_node]
+192.168.30.164 ansible_user=cserver

@@ -1,0 +1,19 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks: 
+
+  - name: Updating and upgrading the operating system
+    yum:
+      name: "*"
+      state: latest
+      update_cache: true
+
+- hosts: controller_node 
+  become: true
+  roles:
+    - keystone
+    - glance
+    - nova
+
